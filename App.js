@@ -1,5 +1,6 @@
 // App.js
-import React from 'react';
+import { useState } from "react";
+
 import {
   View,
   Text,
@@ -7,9 +8,45 @@ import {
   TouchableOpacity,
   ScrollView,
   StatusBar,
-} from 'react-native';
+  TextInput,
+  Alert,
+} from "react-native";
 
 export default function App() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  // ✅ تم إصلاح الخطأ هنا فقط
+  const sendMessage = async () => {
+    try {
+      const response = await fetch("http://192.168.43.73:5000/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          message,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        Alert.alert("تم الإرسال بنجاح");
+
+        setName("");
+        setEmail("");
+        setMessage("");
+      }
+    } catch (error) {
+      Alert.alert("خطأ في الاتصال بالسيرفر");
+      console.log(error);
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       <StatusBar barStyle="light-content" />
@@ -26,7 +63,32 @@ export default function App() {
           احترافي وتجربة مستخدم ممتازة.
         </Text>
 
-        <TouchableOpacity style={styles.button}>
+        <TextInput
+          placeholder="الاسم"
+          placeholderTextColor="#94a3b8"
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+        />
+
+        <TextInput
+          placeholder="البريد الإلكتروني"
+          placeholderTextColor="#94a3b8"
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+        />
+
+        <TextInput
+          placeholder="الرسالة"
+          placeholderTextColor="#94a3b8"
+          style={[styles.input, { height: 120 }]}
+          multiline
+          value={message}
+          onChangeText={setMessage}
+        />
+
+        <TouchableOpacity style={styles.button} onPress={sendMessage}>
           <Text style={styles.buttonText}>تواصل معي</Text>
         </TouchableOpacity>
       </View>
@@ -36,6 +98,7 @@ export default function App() {
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>تطوير تطبيقات موبايل</Text>
+
           <Text style={styles.cardText}>
             إنشاء تطبيقات Android و iOS باستخدام React Native.
           </Text>
@@ -43,6 +106,7 @@ export default function App() {
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>واجهات حديثة</Text>
+
           <Text style={styles.cardText}>
             تصميم واجهات عصرية وسريعة الاستجابة.
           </Text>
@@ -50,6 +114,7 @@ export default function App() {
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>حلول ذكاء اصطناعي</Text>
+
           <Text style={styles.cardText}>
             دمج تقنيات الذكاء الاصطناعي داخل التطبيقات.
           </Text>
@@ -57,9 +122,7 @@ export default function App() {
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>
-          © 2026 المهندس أحمد العصري
-        </Text>
+        <Text style={styles.footerText}>© 2026 المهندس أحمد العصري</Text>
       </View>
     </ScrollView>
   );
@@ -68,39 +131,39 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f172a',
+    backgroundColor: "#0f172a",
   },
 
   hero: {
     padding: 30,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 60,
   },
 
   name: {
     fontSize: 34,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#ffffff",
+    textAlign: "center",
   },
 
   title: {
     fontSize: 18,
-    color: '#38bdf8',
+    color: "#38bdf8",
     marginTop: 15,
-    textAlign: 'center',
+    textAlign: "center",
   },
 
   description: {
     fontSize: 16,
-    color: '#cbd5e1',
-    textAlign: 'center',
+    color: "#cbd5e1",
+    textAlign: "center",
     marginTop: 20,
     lineHeight: 26,
   },
 
   button: {
-    backgroundColor: '#38bdf8',
+    backgroundColor: "#38bdf8",
     paddingVertical: 14,
     paddingHorizontal: 35,
     borderRadius: 12,
@@ -108,8 +171,8 @@ const styles = StyleSheet.create({
   },
 
   buttonText: {
-    color: '#0f172a',
-    fontWeight: 'bold',
+    color: "#0f172a",
+    fontWeight: "bold",
     fontSize: 16,
   },
 
@@ -118,40 +181,50 @@ const styles = StyleSheet.create({
   },
 
   sectionTitle: {
-    color: '#ffffff',
+    color: "#ffffff",
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
 
   card: {
-    backgroundColor: '#1e293b',
+    backgroundColor: "#1e293b",
     padding: 20,
     borderRadius: 15,
     marginBottom: 15,
   },
 
   cardTitle: {
-    color: '#38bdf8',
+    color: "#38bdf8",
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
   },
 
   cardText: {
-    color: '#cbd5e1',
+    color: "#cbd5e1",
     fontSize: 15,
     lineHeight: 24,
   },
 
   footer: {
     padding: 30,
-    alignItems: 'center',
+    alignItems: "center",
   },
 
   footerText: {
-    color: '#94a3b8',
+    color: "#94a3b8",
     fontSize: 14,
+  },
+
+  input: {
+    width: "100%",
+    backgroundColor: "#1e293b",
+    marginTop: 15,
+    borderRadius: 12,
+    padding: 15,
+    color: "#ffffff",
+    fontSize: 16,
   },
 });
